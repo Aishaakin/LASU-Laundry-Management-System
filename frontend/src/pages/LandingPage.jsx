@@ -3,9 +3,9 @@ import { useAuth } from '../context/AuthContext'
 import { formatNaira } from '../utils/helpers'
 
 const SERVICES = [
-  { icon: '🧺', name: 'Wash & Fold',   price: 800,  unit: 'per item', desc: 'Daily wear cleaned, dried, and neatly folded. Perfect for your busy schedule.', features: ['Color separation', 'Neat folding', 'Same-day available'] },
-  { icon: '👔', name: 'Wash & Iron',   price: 1500, unit: 'per item', desc: 'Washed, dried, and professionally steam-pressed for a crisp, store-bought finish.', features: ['Professional pressing', 'Eco-friendly detergents', '24-48h turnaround'] },
-  { icon: '✨', name: 'Dry Cleaning',  price: 2500, unit: 'per item', desc: 'Expert care for suits, silk, and formal garments using eco-safe solvents.', features: ['Eco-safe solvents', 'Hanger delivery', 'Stain treatment'] },
+  { icon: '🧺', name: 'Wash & Fold',   price: 500,  unit: 'per item', desc: 'Daily wear cleaned, dried, and neatly folded. Perfect for your busy schedule.', features: ['Color separation', 'Neat folding', 'Same-day available'] },
+  { icon: '👔', name: 'Wash & Iron',   price: 500, unit: 'per item', desc: 'Washed, dried, and professionally steam-pressed for a crisp, store-bought finish.', features: ['Professional pressing', 'Eco-friendly detergents', '24-48h turnaround'] },
+  { icon: '✨', name: 'Dry Cleaning',  price: 500, unit: 'per item', desc: 'Expert care for suits, silk, and formal garments using eco-safe solvents.', features: ['Eco-safe solvents', 'Hanger delivery', 'Stain treatment'] },
 ]
 
 const HOW_STEPS = [

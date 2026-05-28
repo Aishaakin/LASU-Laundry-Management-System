@@ -28,12 +28,12 @@ export default function AuthLayout() {
             Book your laundry service online. Pay with card or at the service counter. We'll notify you when your clothes are ready.
           </p>
           <div className="flex flex-col gap-3">
-            {['✅ Naira-based pricing', '✅ Paystack & card payments', '✅ Email notifications when ready', '✅ Admin-managed scheduling'].map(t => (
+            {['Naira-based pricing', 'Paystack & card payments',  'Email notifications for your orders'].map(t => (
               <div key={t} className="text-slate-300 text-sm">{t}</div>
             ))}
           </div>
         </div>
-        <p className="text-slate-500 text-xs relative z-10">© 2024 LASU Viva Laundromat. Lagos State University.</p>
+        <p className="text-slate-500 text-xs relative z-10">© 2025 LASU Viva Laundromat. Lagos State University.</p>
       </div>
 
       {/* Right panel */}

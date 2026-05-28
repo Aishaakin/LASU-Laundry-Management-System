@@ -132,13 +132,13 @@ CORS_ALLOWED_ORIGINS  = env_list('CORS_ORIGINS', 'http://localhost:3000,http://1
 CORS_ALLOW_CREDENTIALS = True
 
 # ── Email ─────────────────────────────────────────────────────────
-EMAIL_BACKEND       = env('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_BACKEND       = env('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST          = env('EMAIL_HOST',    'smtp.gmail.com')
-EMAIL_PORT          = env('EMAIL_PORT',    587,    cast=int)
+EMAIL_PORT          = env('EMAIL_PORT',    587, cast=int)
 EMAIL_USE_TLS       = env('EMAIL_USE_TLS', 'True', cast=lambda v: v.lower() in ('true','1','yes'))
-EMAIL_HOST_USER     = env('EMAIL_HOST_USER',     '')
+EMAIL_HOST_USER     = env('EMAIL_HOST_USER',     'muakin12@gmail.com')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL  = env('DEFAULT_FROM_EMAIL',  'LASU Viva Laundromat <noreply@lasuvivalaundromat.com.ng>')
+DEFAULT_FROM_EMAIL  = env('DEFAULT_FROM_EMAIL',  'LASU Viva Laundromat <muakin12@gmail.com>')
 
 # ── Paystack ──────────────────────────────────────────────────────
 PAYSTACK_SECRET_KEY = env('PAYSTACK_SECRET_KEY', 'sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxx')

@@ -26,8 +26,9 @@ export default function PaymentPage() {
     reference: `LAU-${bookingId}-${Date.now()}`,
     email: user?.email || '',
     amount: Math.round(Number(total) * 100), // convert to kobo
-    publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_xxxx',
+    publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_274e6ff9df706b42664328af4c5fbfc8b42e583a',
     currency: 'NGN',
+    channels: ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
     metadata: {
       booking_id: bookingId,
       order_number: booking?.order_number,

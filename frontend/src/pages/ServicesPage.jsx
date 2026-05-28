@@ -8,7 +8,7 @@ const FALLBACK_SERVICES = [
     id: 1,
     name: "Wash & Fold",
     icon: "🧺",
-    price: 800,
+    price: 500,
     price_unit: "per_item",
     description:
       "Fast and efficient. Ideal for everyday wear, gym clothes, and towels. Expertly washed, softened, and neatly folded.",
@@ -18,7 +18,7 @@ const FALLBACK_SERVICES = [
     id: 2,
     name: "Wash & Iron",
     icon: "👔",
-    price: 400,
+    price: 500,
     price_unit: "per_item",
     description:
       "Premium complete care. Your clothes are washed, dried, and professionally steam-pressed for a crisp finish.",
@@ -32,7 +32,7 @@ const FALLBACK_SERVICES = [
     id: 3,
     name: "Dry Cleaning",
     icon: "💨",
-    price: 800,
+    price: 500,
     price_unit: "per_item",
     description:
       "Expert care for suits, silk, and formal garments using eco-safe solvents. Hanger delivery included.",

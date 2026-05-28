@@ -22,6 +22,10 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage'
 import PayAtServicePage from './pages/PayAtServicePage'
 import ProfilePage from './pages/ProfilePage'
 
+// Staff pages
+import StaffLoginPage from './pages/staff/StaffLoginPage'
+import StaffDashboardPage from './pages/staff/StaffDashboardPage'
+
 function ProtectedRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuth()
   if (isLoading) return (
@@ -33,6 +37,14 @@ function ProtectedRoute({ children }) {
     </div>
   )
   return isAuthenticated ? children : <Navigate to="/auth/login" replace />
+}
+
+function StaffRoute({ children }) {
+  const { isAuthenticated, user, isLoading } = useAuth()
+  if (isLoading) return null
+  if (!isAuthenticated) return <Navigate to="/staff/login" replace />
+  if (!user?.is_staff) return <Navigate to="/" replace />
+  return children
 }
 
 function PublicOnlyRoute({ children }) {
@@ -61,6 +73,12 @@ export default function App() {
           <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/auth/reset-password/:uid/:token" element={<ResetPasswordPage />} />
         </Route>
+
+      {/* Staff Portal */}
+        <Route path="/staff/login" element={<StaffLoginPage />} />
+        <Route path="/staff/dashboard" element={
+        <StaffRoute><StaffDashboardPage /></StaffRoute>
+} />
 
         {/* Protected app */}
         <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

@@ -76,3 +76,19 @@ class SavedLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model  = SavedLocation
         fields = ['id','label','address','is_default']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = User
+        fields = [
+            'id', 'first_name', 'last_name', 'email',
+            'phone_number', 'bio', 'status',
+            'member_since', 'notifications_enabled',
+            'is_staff',       # ← ADD THIS
+            'is_superuser',   # ← ADD THIS
+        ]
+        read_only_fields = [
+            'id', 'status', 'member_since',
+            'is_staff', 'is_superuser',   # ← ADD THESE
+        ]
