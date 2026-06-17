@@ -174,3 +174,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_NAME     = 'LASU Viva Laundromat'
 SITE_ADDRESS  = 'LASU Main Campus, Lagos State University, Lagos, Nigeria'
 SUPPORT_EMAIL = 'help@lasuvivalaundromat.com.ng'
+
+
+# ── Railway deployment ─────────────────────────────────────────────
+try:
+    import importlib
+    dj_database_url = importlib.import_module('dj_database_url')
+except (ImportError, ModuleNotFoundError):
+    dj_database_url = None
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL and dj_database_url:
+    DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+
+ALLOWED_HOSTS += ['.railway.app', '.up.railway.app', '.vercel.app']

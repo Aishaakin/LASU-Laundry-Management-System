@@ -14,3 +14,4 @@ redis>=5.0
 gunicorn>=21.0             # Production WSGI server
 python-decouple>=3.8       # .env file management
 Pillow>=10.0               # Image handling
+dj-database-url>=2.1
