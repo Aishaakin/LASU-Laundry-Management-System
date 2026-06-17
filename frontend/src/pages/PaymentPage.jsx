@@ -56,9 +56,11 @@ export default function PaymentPage() {
 
   // Paystack success callback
   const onPaystackSuccess = (response) => {
-    toast.loading('Verifying payment...')
-    verifyPayment(response.reference)
-  }
+  const toastId = toast.loading('Verifying payment...')
+  verifyPayment(response.reference, {
+    onSettled: () => toast.dismiss(toastId)
+  })
+}
 
   // Paystack close callback
   const onPaystackClose = () => {

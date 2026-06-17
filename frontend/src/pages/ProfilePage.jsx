@@ -48,7 +48,7 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1 text-center sm:text-left">
             <h2 className="text-xl font-bold text-slate-900">{user?.first_name} {user?.last_name}</h2>
-            <p className="text-slate-500 text-sm">Member since {user?.member_since || '2024'}</p>
+            <p className="text-slate-500 text-sm">Member since {user?.member_since || '2026'}</p>
             <div className="flex gap-2 mt-3 justify-center sm:justify-start">
               <button onClick={() => setEditMode(!editMode)} className="btn-primary text-sm py-2">
                 <span className="material-symbols-outlined text-sm">edit</span> Edit Profile

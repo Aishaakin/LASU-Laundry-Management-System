@@ -79,7 +79,7 @@ def _html_wrapper(title, content_html, cta_label=None, cta_url=None):
           <p style="margin:6px 0 0;color:#94a3b8;font-size:12px;">
             Questions? <a href="mailto:{SUPPORT_EMAIL}" style="color:#1a5edb;">{SUPPORT_EMAIL}</a>
           </p>
-          <p style="margin:8px 0 0;color:#cbd5e1;font-size:11px;">© 2024 {SITE_NAME}. All rights reserved.</p>
+          <p style="margin:8px 0 0;color:#cbd5e1;font-size:11px;">© 2026 {SITE_NAME}. All rights reserved.</p>
         </td></tr>
       </table>
     </td></tr>

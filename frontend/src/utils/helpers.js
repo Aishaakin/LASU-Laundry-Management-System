@@ -190,7 +190,7 @@ export async function generateReceiptPDF(booking) {
   doc.setFont('helvetica', 'normal')
   doc.text('Present this receipt at the laundry service counter.', 20, 280)
   doc.text('Drop-off: LASU Main Campus Laundry Center', 20, 287)
-  doc.text('© 2024 LASU Viva Laundromat. All rights reserved.', 20, 294)
+  doc.text('© 2026 LASU Viva Laundromat. All rights reserved.', 20, 294)
 
   doc.save(`LASU-Viva-Receipt-${booking.order_number}.pdf`)
 }

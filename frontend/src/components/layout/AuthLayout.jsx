@@ -33,7 +33,7 @@ export default function AuthLayout() {
             ))}
           </div>
         </div>
-        <p className="text-slate-500 text-xs relative z-10">© 2025 LASU Viva Laundromat. Lagos State University.</p>
+        <p className="text-slate-500 text-xs relative z-10">© 2026 LASU Viva Laundromat. Lagos State University.</p>
       </div>
 
       {/* Right panel */}

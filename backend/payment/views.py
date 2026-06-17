@@ -5,6 +5,7 @@ from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 
 from booking.models import Booking
@@ -26,7 +27,7 @@ class InitiatePaymentView(APIView):
             return Response({'error': 'Booking not found.'}, status=404)
 
         if booking.payment_method == 'at_service':
-            # No online payment needed — just confirm
+            # No online payment needed.
             booking.status = 'confirmed'
             booking.save()
             try:
@@ -79,7 +80,27 @@ class VerifyPaymentView(APIView):
             return Response({'error': 'Payment verification failed.'}, status=400)
 
         try:
-            payment = Payment.objects.get(reference=reference)
+            payment = Payment.objects.filter(reference=reference).first()
+            if not payment:
+                # Reference format is LAU-{orderNumber}-{random}
+                # Try finding booking from metadata
+                meta = data['data'].get('metadata', {})
+                booking_id = meta.get('booking_id')
+                if booking_id:
+                    try:
+                        booking = Booking.objects.get(id=booking_id, user=request.user)
+                        payment, _ = Payment.objects.get_or_create(
+                            booking=booking,
+                            defaults={
+                                'reference': reference,
+                                'amount':    booking.total_amount,
+                                'status':    'pending',
+                            }
+                        )
+                    except Booking.DoesNotExist:
+                        return Response({'error': 'Booking not found.'}, status=404)
+                else:
+                    return Response({'error': 'Payment record not found.'}, status=404)
             payment.status      = 'success'
             payment.gateway_ref = data['data'].get('id', '')
             payment.paid_at     = timezone.now()

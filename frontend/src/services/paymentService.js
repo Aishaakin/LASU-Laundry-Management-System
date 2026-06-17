@@ -1,5 +1,6 @@
 import api from './api'
-
+// Service for handling payment-related API calls paymentService.js
+// This service includes functions to initiate payments, verify payments, download receipts, and fetch payment history.
 export const paymentService = {
   // Initiate Paystack payment
   async initiatePayment(bookingId, email, amount) {

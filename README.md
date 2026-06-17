@@ -80,10 +80,10 @@ python manage.py shell
 In the Django shell, add sample services:
 ```python
 from laundry.models import Service, ClothingItem
-Service.objects.create(name='Wash & Fold', price=800, price_unit='per_kg', icon='🧺',
+Service.objects.create(name='Wash & Fold', price=500, price_unit='per_kg', icon='🧺',
   description='Fast and efficient. Neatly washed and folded.',
   features=['Neat folding','Color separation','Same-day available'])
-Service.objects.create(name='Wash & Iron', price=1500, price_unit='per_load', icon='👔',
+Service.objects.create(name='Wash & Iron', price=500, price_unit='per_load', icon='👔',
   description='Washed, dried, and professionally pressed.',
   features=['Professional pressing','Eco-friendly','24-48h turnaround'])
 ClothingItem.objects.create(name='T-Shirt', category='tops', price=200, icon='👕')

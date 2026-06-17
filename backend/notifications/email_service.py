@@ -77,7 +77,7 @@ def _base_email(title, subtitle, body_html, booking=None):
   <tr><td style="background:#f8fafc;padding:24px 40px;text-align:center;border-top:1px solid #e2e8f0;">
     <p style="margin:0 0 8px;font-size:13px;color:#64748b;">{SITE_ADDRESS}</p>
     <p style="margin:0 0 8px;font-size:13px;color:#64748b;">Support: <a href="mailto:{SUPPORT_EMAIL}" style="color:{accent};">{SUPPORT_EMAIL}</a></p>
-    <p style="margin:0;font-size:11px;color:#94a3b8;">© 2024 {SITE_NAME}. All rights reserved.</p>
+    <p style="margin:0;font-size:11px;color:#94a3b8;">© 2026 {SITE_NAME}. All rights reserved.</p>
   </td></tr>
 
 </table>
