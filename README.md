@@ -1,75 +1,62 @@
-# 🧺 LASU Viva Laundromat
+🧺 LASU Viva Laundromat
 
-A full-stack laundry booking web application for Lagos State University.
+A full-stack laundry booking web application using Lagos State University LASU Viva Laundromat service.
 
-**Stack:** React + Vite + Tailwind CSS (Frontend) · Django + PostgreSQL (Backend) · Paystack (Payments) · Gmail SMTP (Emails)
+Stack: React + Vite + Tailwind CSS (Frontend) · Django + PostgreSQL (Backend) · Paystack (Payments) · Gmail SMTP (Emails)
 
----
-
-## 📁 Project Structure
+📁 Project Structure
 
 ```
 lasu_viva_laundromat/
-├── frontend/                   ← React + Vite + Tailwind CSS
+├── frontend/                   
 │   ├── src/
 │   │   ├── pages/
-│   │   │   ├── auth/           ← Login, Register, ForgotPassword, ResetPassword
-│   │   │   ├── dashboard/      ← DashboardPage
+│   │   │   ├── auth/           
+│   │   │   ├── dashboard/     
 │   │   │   ├── LandingPage.jsx
 │   │   │   ├── ServicesPage.jsx
-│   │   │   ├── BookingPage.jsx      ← Calendar + item picker
+│   │   │   ├── BookingPage.jsx     
 │   │   │   ├── MyBookingsPage.jsx
 │   │   │   ├── BookingDetailPage.jsx
-│   │   │   ├── PaymentPage.jsx      ← Paystack + Pay at Service
+│   │   │   ├── PaymentPage.jsx     
 │   │   │   ├── PaymentSuccessPage.jsx
-│   │   │   ├── PayAtServicePage.jsx ← Pay at service receipt
+│   │   │   ├── PayAtServicePage.jsx
 │   │   │   └── ProfilePage.jsx
 │   │   ├── components/
-│   │   │   └── layout/         ← Navbar, Footer, DashboardLayout, AuthLayout
-│   │   ├── context/            ← AuthContext (JWT state)
-│   │   ├── services/           ← api.js, authService, bookingService, paymentService
-│   │   └── utils/              ← helpers (formatNaira, dates, PDF generation)
+│   │   │   └── layout/        
+│   │   ├── context/         
+│   │   ├── services/          
+│   │   └── utils/             
 │   ├── tailwind.config.js
 │   ├── vite.config.js
 │   └── package.json
 │
-└── backend/                    ← Django REST Framework
-    ├── core/                   ← settings.py, urls.py, wsgi.py
-    ├── laundry/                ← User model, Service, ClothingItem, auth views
-    ├── booking/                ← Booking model, create/list/admin views
-    ├── payment/                ← Payment model, Paystack integration, PDF receipts
-    ├── notifications/          ← All 7 email templates & sending logic
+└── backend/                   
+    ├── core/                  
+    ├── laundry/                
+    ├── booking/                
+    ├── payment/               
+    ├── notifications/         
     ├── manage.py
     └── requirements.txt
-```
 
----
+Setup Instructions
 
-## 🚀 Setup Instructions
-
-### Backend (Django)
-
-```bash
+Backend (Django)
 cd backend
 
-# Create virtual environment
+ Create virtual environment
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+for Mac: source venv/bin/activate      for Windows: venv\Scripts\activate
 
-# Install dependencies
+ Install dependencies
 pip install -r requirements.txt
-
-# Set up environment
-cp .env.example .env
-# Edit .env with your database, email, Paystack credentials
-
-# Create PostgreSQL database
-psql -U postgres -c "CREATE DATABASE lasu_viva_laundromat;"
 
 # Run migrations
 python manage.py makemigrations laundry booking payment
 python manage.py migrate
 
+<<<<<<< HEAD
 # Create superuser (admin)
 python manage.py createsuperuser
 
@@ -93,6 +80,9 @@ ClothingItem.objects.create(name='Dress', category='dresses', price=700, icon='�
 
 ```bash
 # Start the backend server
+=======
+Start the backend server
+>>>>>>> 4b124dceb079bf37fa73651f027491ee1b7f6cc7
 python manage.py runserver
 ```
 
@@ -101,19 +91,14 @@ Admin dashboard: `http://localhost:8000/admin/`
 
 ---
 
-### Frontend (React + Vite)
+### Frontend (React and Vite)
 
 ```bash
 cd frontend
 
-# Install dependencies
+Install dependencies
 npm install
-
-# Set up environment
-cp .env.example .env
-# Edit .env — set VITE_API_URL=http://localhost:8000
-
-# Start development server
+Start development server
 npm run dev
 ```
 
@@ -121,70 +106,23 @@ Frontend available at: `http://localhost:3000`
 
 ---
 
-## 💳 Payment Setup (Paystack)
+Payment Setup (Paystack)
 
 1. Sign up at [dashboard.paystack.com](https://dashboard.paystack.com)
-2. Get your **Test Keys** from Settings → API Keys
-3. Add to backend `.env`:
+2. Get the Test Keys from Settings → API Keys
+3. Added to backend `.env`:
    ```
    PAYSTACK_SECRET_KEY=sk_test_xxxx
    PAYSTACK_PUBLIC_KEY=pk_test_xxxx
    ```
-4. Add to frontend `.env`:
+4. Added to frontend `.env`:
    ```
    VITE_PAYSTACK_PUBLIC_KEY=pk_test_xxxx
    ```
-5. **Supported cards:** Verve, Mastercard, Visa (Nigerian cards)
+5. Supported cards: Verve, Mastercard, Visa (Nigerian cards)
 6. For live payments, switch to live keys and complete Paystack business verification
 
----
-
-## 📧 Email Setup (Gmail SMTP)
-
-1. Enable 2-factor authentication on your Gmail account
-2. Create an **App Password**: Google Account → Security → App Passwords
-3. Add to backend `.env`:
-   ```
-   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-   EMAIL_HOST_USER=your@gmail.com
-   EMAIL_HOST_PASSWORD=your_16_char_app_password
-   ```
-
-**Email triggers (automatic):**
-
-| Trigger | Email Sent To | Subject |
-|---------|--------------|---------|
-| User registers | Customer | Welcome to LASU Viva! |
-| Forgot password | Customer | Password Reset Request |
-| Booking submitted | Admin staff | New Booking Request #LAU-XXXXX |
-| Admin confirms booking | Customer | Booking Confirmed ✅ |
-| Admin rejects booking | Customer | Slot Unavailable (with alternatives) |
-| Staff marks "Received" | Customer | We've Received Your Items 🧺 |
-| Staff marks "Ready" | Customer | Your Clothes Are Ready! 🎉 |
-
----
-
-## 🛠️ Admin Dashboard
-
-Access at `http://localhost:8000/admin/`
-
-**Key admin actions:**
-- View all bookings, filter by status/date
-- **Confirm/reject** bookings with one click (sends automatic email)
-- Use bulk actions: "Mark as Confirmed", "Mark as Received", "Mark as Ready"
-- Manage services, clothing items, promo codes, users
-
-**To mark clothes as ready (triggers customer email):**
-```
-1. Go to Admin → Bookings
-2. Find the booking
-3. Use the dropdown or bulk action to set status → "Ready for Pickup"
-4. Customer receives: "Your Clothes Are Ready! 🎉" email automatically
-```
-
----
-
-## 🔌 API Reference
+ API Reference
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -209,46 +147,3 @@ Access at `http://localhost:8000/admin/`
 | GET | `/api/v1/admin/bookings/` | (Admin) All bookings |
 | PATCH | `/api/v1/admin/bookings/{id}/status/` | (Admin) Update status + send email |
 
----
-
-## 🗄️ Deployment (Production)
-
-### PostgreSQL
-Already configured in settings. Just set the correct `.env` values.
-
-### Backend (Gunicorn + Nginx)
-```bash
-pip install gunicorn
-gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3
-```
-
-### Frontend (Vercel / Netlify)
-```bash
-npm run build
-# Deploy the dist/ folder to Vercel or Netlify
-# Set VITE_API_URL to your production backend URL
-```
-
-### Recommended Hosting
-- **Backend:** Railway, Render, or DigitalOcean
-- **Database:** Railway PostgreSQL or Supabase
-- **Frontend:** Vercel (free tier)
-- **Email:** Gmail SMTP (free) or SendGrid for high volume
-
----
-
-## 🧑‍💻 Tech Stack Summary
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, Vite, Tailwind CSS, React Router v6 |
-| State/Fetching | React Context, TanStack Query, Axios |
-| Forms | React Hook Form |
-| Auth | JWT (access + refresh tokens) |
-| Backend | Django 4.2, Django REST Framework |
-| Database | PostgreSQL |
-| Payments | Paystack (Verve, Mastercard, Visa) |
-| PDF Receipts | ReportLab (server) + jsPDF (client) |
-| Emails | Django SMTP + custom HTML templates |
-| Background Tasks | Celery + Redis (optional) |
-| Deployment | Gunicorn + Nginx / Vercel |
