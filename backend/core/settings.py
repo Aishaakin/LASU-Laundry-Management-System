@@ -128,7 +128,12 @@ SIMPLE_JWT = {
 }
 
 # ── CORS ──────────────────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS  = env_list('CORS_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000')
+CORS_ALLOWED_ORIGINS = env_list('CORS_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000')
+
+# Also allow all Vercel preview URLs
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+]
 CORS_ALLOW_CREDENTIALS = True
 
 # ── Email ─────────────────────────────────────────────────────────
@@ -173,7 +178,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ── Site Info ─────────────────────────────────────────────────────
 SITE_NAME     = 'LASU Viva Laundromat'
 SITE_ADDRESS  = 'LASU Main Campus, Lagos State University, Lagos, Nigeria'
-SUPPORT_EMAIL = 'help@lasuvivalaundromat.com.ng'
+SUPPORT_EMAIL = 'muakin12@gmail.com'
 
 
 # ── Railway deployment ─────────────────────────────────────────────
