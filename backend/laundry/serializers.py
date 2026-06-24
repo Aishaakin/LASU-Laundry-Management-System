@@ -7,13 +7,17 @@ from .models import User, Service, ClothingItem, SavedLocation
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model  = User
-        fields = ['id','first_name','last_name','email','phone_number','bio','status','member_since','notifications_enabled']
+        fields = ['id','first_name','last_name','email','phone_number','bio','status','member_since','notifications_enabled','matric_number','department']
         read_only_fields = ['id','status','member_since']
+        matric_number = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+        department    = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     password         = serializers.CharField(write_only=True, validators=[validate_password])
     confirm_password = serializers.CharField(write_only=True)
+    matric_number = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    department    = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model  = User

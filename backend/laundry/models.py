@@ -7,6 +7,8 @@ class User(AbstractUser):
     email           = models.EmailField(unique=True)
     phone_number    = models.CharField(max_length=20, blank=True)
     bio             = models.TextField(blank=True)
+    matric_number = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    department     = models.CharField(max_length=100, blank=True, null=True)
     member_since    = models.DateField(auto_now_add=True)
     notifications_enabled = models.BooleanField(default=True)
     status          = models.CharField(

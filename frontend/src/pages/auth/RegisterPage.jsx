@@ -82,6 +82,41 @@ export default function RegisterPage() {
           {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
         </div>
 
+      {/* Matric Number - Optional */}
+<div>
+  <label className="input-label">
+    Matric Number
+    <span className="text-slate-400 font-normal text-xs ml-1">(optional — students only)</span>
+  </label>
+  <div className="relative">
+    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">badge</span>
+    <input
+      type="text"
+      placeholder="e.g. 220591001"
+      className="input pl-10"
+      {...register('matric_number')}
+    />
+  </div>
+</div>
+
+{/* Department - Optional */}
+<div>
+  <label className="input-label">
+    Department
+    <span className="text-slate-400 font-normal text-xs ml-1">(optional — students only)</span>
+  </label>
+  <div className="relative">
+    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">school</span>
+    <input
+      type="text"
+      placeholder="e.g. Computer Science"
+      className="input pl-10"
+      {...register('department')}
+    />
+  </div>
+</div>
+
+
         <div>
           <label className="input-label">Password</label>
           <div className="relative">

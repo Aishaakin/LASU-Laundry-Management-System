@@ -7,7 +7,7 @@ from .models import Booking, BookingItem, PromoCode
 from .serializers import BookingSerializer, CreateBookingSerializer, AdminBookingUpdateSerializer
 from laundry.models import Service, ClothingItem, SavedLocation
 
-SERVICE_FEE = Decimal('500.00')
+SERVICE_FEE = Decimal('200.00')
 
 def apply_promo(code_str, subtotal):
     from django.utils import timezone

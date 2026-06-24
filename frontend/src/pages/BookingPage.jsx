@@ -17,7 +17,7 @@ const CLOTHING_ITEMS = {
 }
 
 const TIME_SLOTS = ['08:00', '09:00', '11:00', '12:30', '14:00', '15:30', '17:00']
-const SERVICE_FEE = 500
+const SERVICE_FEE = 200
 
 export default function BookingPage() {
   const { serviceId } = useParams()

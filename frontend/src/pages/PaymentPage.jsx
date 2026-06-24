@@ -7,6 +7,8 @@ import { paymentService } from '../services/paymentService'
 import { formatNaira } from '../utils/helpers'
 import { usePaystackPayment } from 'react-paystack'
 import toast from 'react-hot-toast'
+import api from '../services/api'
+
 
 export default function PaymentPage() {
   const { bookingId } = useParams()
@@ -16,10 +18,14 @@ export default function PaymentPage() {
   const booking = state?.booking
   const [method, setMethod] = useState('card')
   const [promoCode, setPromoCode] = useState('')
+  
+  const [promoResult, setPromoResult] = useState(null)
+  const [applyingPromo, setApplyingPromo] = useState(false)
+  const [discount, setDiscount] = useState(0)
 
   const total = booking?.total_amount || 0
   const subtotal = booking?.subtotal || 0
-  const serviceFee = booking?.service_fee || 500
+  const serviceFee = booking?.service_fee || 200
 
   // Paystack config
   const paystackConfig = {
@@ -77,6 +83,30 @@ export default function PaymentPage() {
     },
     onError: () => toast.error('Could not confirm booking. Please try again.'),
   })
+
+  const handleApplyPromo = async () => {
+  if (!promoCode.trim()) return
+  setApplyingPromo(true)
+  try {
+    const res = await api.post('/promos/validate/', {
+      code:   promoCode.trim().toUpperCase(),
+      amount: total,
+    })
+    const data = res.data
+    setDiscount(data.discount_amount || 0)
+    setPromoResult({
+      valid:   true,
+      message: `You save ${formatNaira(data.discount_amount)} on this order!`,
+    })
+    toast.success('Promo code applied!')
+  } catch (err) {
+    const msg = err.response?.data?.error || 'Invalid or expired promo code.'
+    setPromoResult({ valid: false, error: msg })
+    setDiscount(0)
+  } finally {
+    setApplyingPromo(false)
+  }
+}
 
   const handleSubmitPayment = () => {
     if (method === 'card') {
@@ -267,28 +297,66 @@ export default function PaymentPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">VAT</span>
+                {discount > 0 && (
+  <div className="flex justify-between">
+    <span className="text-emerald-600 font-semibold">Promo Discount</span>
+    <span className="font-semibold text-emerald-600">-{formatNaira(discount)}</span>
+  </div>
+)}
                 <span className="font-semibold">₦0</span>
               </div>
             </div>
             <div className="flex justify-between items-center pt-4 mt-3 border-t-2 border-dashed border-slate-200">
               <span className="font-bold text-slate-900">Total</span>
-              <span className="text-2xl font-bold text-primary-600 font-display">{formatNaira(total)}</span>
+              <span className="text-2xl font-bold text-primary-600 font-display">{formatNaira(Math.max(0, Number(total) - discount))}</span>
             </div>
           </div>
 
           {/* Promo code */}
-          <div className="card p-4">
-            <label className="input-label">Promo Code</label>
-            <div className="flex gap-2">
-              <input
-                value={promoCode}
-                onChange={e => setPromoCode(e.target.value)}
-                className="input flex-1 py-2"
-                placeholder="LASU20"
-              />
-              <button className="btn-ghost py-2 px-4 text-sm">Apply</button>
-            </div>
-          </div>
+<div className="card p-4">
+  <label className="input-label">Promo Code</label>
+  <div className="flex gap-2">
+    <input
+      value={promoCode}
+      onChange={e => { setPromoCode(e.target.value); setPromoResult(null) }}
+      className={`input flex-1 py-2 ${promoResult?.valid ? 'border-emerald-400' : promoResult?.valid === false ? 'border-red-400' : ''}`}
+      placeholder="e.g. LASU01"
+      disabled={promoResult?.valid}
+    />
+    <button
+      onClick={handleApplyPromo}
+      disabled={applyingPromo || !promoCode.trim() || promoResult?.valid}
+      className="btn-ghost py-2 px-4 text-sm"
+    >
+      {applyingPromo ? (
+        <span className="w-4 h-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin inline-block" />
+      ) : promoResult?.valid ? '✅' : 'Apply'}
+    </button>
+  </div>
+
+  {/* Success message */}
+  {promoResult?.valid && (
+    <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between">
+      <div>
+        <p className="text-xs font-bold text-emerald-700">Promo code applied! 🎉</p>
+        <p className="text-xs text-emerald-600">{promoResult.message}</p>
+      </div>
+      <button
+        onClick={() => { setPromoResult(null); setPromoCode(''); setDiscount(0) }}
+        className="text-xs text-emerald-600 hover:text-emerald-800 font-semibold"
+      >
+        Remove
+      </button>
+    </div>
+  )}
+
+  {/* Error message */}
+  {promoResult?.valid === false && (
+    <div className="mt-2 p-2.5 bg-red-50 border border-red-200 rounded-lg">
+      <p className="text-xs font-bold text-red-600">❌ {promoResult.error}</p>
+    </div>
+  )}
+</div>
 
           {/* Help */}
           <div className="card p-4 bg-primary-50 border-primary-200">
