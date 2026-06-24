@@ -339,10 +339,10 @@ SIMPLE_JWT = {
 }
 
 # ── CORS ──────────────────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS = env_list(
-    'CORS_ORIGINS', 
-    'http://localhost:3000,http://127.0.0.1:3000,https://lasu-laundry-management-system.vercel.app,https://lasu-laundry-management-system-b0c4vvuxh.vercel.app,https://laundry-management-system-project.onrender.com'
-)
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
 
 # Also allow all Vercel preview URLs (this handles ANY future previews!)
 CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -351,7 +351,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# ── Email ─────────────────────────────────────────────────────────
+# ── Email ─────────────────────────────────────��───────────────────
 EMAIL_BACKEND       = env('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST          = env('EMAIL_HOST',    'smtp.gmail.com')
 EMAIL_PORT          = env('EMAIL_PORT',    587, cast=int)
