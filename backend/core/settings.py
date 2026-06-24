@@ -30,8 +30,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ── Core ──────────────────────────────────────────────────────────
 SECRET_KEY   = env('SECRET_KEY', 'django-insecure-change-me-in-production-!!!')
 DEBUG        = env('DEBUG', 'True', cast=lambda v: v.lower() in ('true', '1', 'yes'))
-ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0', 'lasu-laundry-management-system-fhl1upd1p.vercel.app',
-    'lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app','lasu-laundry-management-system.vercel.app','laundry-management-system-project.onrender.com')
+
+# ✅ UPDATED: All Vercel URLs added back with correct syntax
+ALLOWED_HOSTS = env_list(
+    'ALLOWED_HOSTS', 
+    'localhost,127.0.0.1,0.0.0.0',
+    'lasu-laundry-management-system.vercel.app',
+    'lasu-laundry-management-system-5py2bnllh.vercel.app',
+    'lasu-laundry-management-system-flh1upd1p.vercel.app',
+    'lasu-laundry-management-system-fhl1upd1p.vercel.app',
+    'lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app',
+    'lasu-laundry-management-system-git-786918-aishas-projects-c24a2b15.vercel.app',
+    'laundry-management-system-project.onrender.com'
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -129,8 +140,18 @@ SIMPLE_JWT = {
 }
 
 # ── CORS ──────────────────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS = env_list('CORS_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000', 'https://lasu-laundry-management-system-fhl1upd1p.vercel.app',
-    'https://lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app', 'https://laundry-management-system-project.onrender.com', 'https://lasu-laundry-management-system.vercel.app',)
+# ✅ UPDATED: All Vercel URLs added back with correct syntax
+CORS_ALLOWED_ORIGINS = env_list(
+    'CORS_ORIGINS', 
+    'http://localhost:3000,http://127.0.0.1:3000',
+    'https://lasu-laundry-management-system.vercel.app',
+    'https://lasu-laundry-management-system-5py2bnllh.vercel.app',
+    'https://lasu-laundry-management-system-flh1upd1p.vercel.app',
+    'https://lasu-laundry-management-system-fhl1upd1p.vercel.app',
+    'https://lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app',
+    'https://lasu-laundry-management-system-git-786918-aishas-projects-c24a2b15.vercel.app',
+    'https://laundry-management-system-project.onrender.com'
+)
 
 # Also allow all Vercel preview URLs
 CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -154,7 +175,17 @@ PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', 'pk_test_xxxxxxxxxxxxxxxxxxxxxx
 PAYSTACK_BASE_URL   = 'https://api.paystack.co'
 
 # ── Frontend URL (used in email links) ────────────────────────────
-FRONTEND_URL = env('FRONTEND_URL', 'http://localhost:3000', 'https://lasu-laundry-management-system-fhl1upd1p.vercel.app', 'https://lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app', 'https://lasu-laundry-management-system.vercel.app')
+# ✅ UPDATED: All Vercel URLs added back with correct syntax
+FRONTEND_URL = env(
+    'FRONTEND_URL', 
+    'http://localhost:3000',
+    'https://lasu-laundry-management-system.vercel.app',
+    'https://lasu-laundry-management-system-5py2bnllh.vercel.app',
+    'https://lasu-laundry-management-system-flh1upd1p.vercel.app',
+    'https://lasu-laundry-management-system-fhl1upd1p.vercel.app',
+    'https://lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app',
+    'https://lasu-laundry-management-system-git-786918-aishas-projects-c24a2b15.vercel.app'
+)
 
 # ── Celery / Redis ────────────────────────────────────────────────
 CELERY_BROKER_URL        = env('REDIS_URL', 'redis://localhost:6379/0')
@@ -183,7 +214,6 @@ SITE_NAME     = 'LASU Viva Laundromat'
 SITE_ADDRESS  = 'LASU Main Campus, Lagos State University, Lagos, Nigeria'
 SUPPORT_EMAIL = 'muakin12@gmail.com'
 
-
 # ── Railway deployment ─────────────────────────────────────────────
 try:
     import importlib
@@ -195,4 +225,5 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL and dj_database_url:
     DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 
+# ✅ Wildcard domains for ALLOWED_HOSTS
 ALLOWED_HOSTS += ['.railway.app', '.up.railway.app', '.vercel.app', '.render.com']
