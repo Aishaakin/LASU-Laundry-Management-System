@@ -31,7 +31,6 @@
 # SECRET_KEY   = env('SECRET_KEY', 'django-insecure-change-me-in-production-!!!')
 # DEBUG        = env('DEBUG', 'True', cast=lambda v: v.lower() in ('true', '1', 'yes'))
 
-# # ✅ UPDATED: All Vercel URLs added back with correct syntax
 # ALLOWED_HOSTS = env_list(
 #     'ALLOWED_HOSTS', 
 #     'localhost,127.0.0.1,0.0.0.0',
@@ -140,7 +139,6 @@
 # }
 
 # # ── CORS ──────────────────────────────────────────────────────────
-# # ✅ UPDATED: All Vercel URLs added back with correct syntax
 # CORS_ALLOWED_ORIGINS = env_list(
 #     'CORS_ORIGINS', 
 #     'http://localhost:3000,http://127.0.0.1:3000',
@@ -175,7 +173,6 @@
 # PAYSTACK_BASE_URL   = 'https://api.paystack.co'
 
 # # ── Frontend URL (used in email links) ────────────────────────────
-# # ✅ UPDATED: All Vercel URLs added back with correct syntax
 # FRONTEND_URL = env(
 #     'FRONTEND_URL', 
 #     'http://localhost:3000',
@@ -225,7 +222,6 @@
 # if DATABASE_URL and dj_database_url:
 #     DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 
-# # ✅ Wildcard domains for ALLOWED_HOSTS
 # ALLOWED_HOSTS += ['.railway.app', '.up.railway.app', '.vercel.app', '.render.com']
 
 
@@ -262,7 +258,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY   = env('SECRET_KEY', 'django-insecure-change-me-in-production-!!!')
 DEBUG        = env('DEBUG', 'True', cast=lambda v: v.lower() in ('true', '1', 'yes'))
 
-# ✅ CORRECTED: Only active Vercel URLs
 ALLOWED_HOSTS = env_list(
     'ALLOWED_HOSTS', 
     'localhost,127.0.0.1,0.0.0.0',
@@ -367,7 +362,6 @@ SIMPLE_JWT = {
 }
 
 # ── CORS ──────────────────────────────────────────────────────────
-# ✅ CORRECTED: Only active Vercel URLs
 CORS_ALLOWED_ORIGINS = env_list(
     'CORS_ORIGINS', 
     'http://localhost:3000,http://127.0.0.1:3000',
@@ -398,7 +392,6 @@ PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', 'pk_test_xxxxxxxxxxxxxxxxxxxxxx
 PAYSTACK_BASE_URL   = 'https://api.paystack.co'
 
 # ── Frontend URL (used in email links) ────────────────────────────
-# ✅ CORRECTED: Only production URL (preview URLs handled by regex)
 FRONTEND_URL = env(
     'FRONTEND_URL', 
     'http://localhost:3000',
