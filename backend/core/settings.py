@@ -84,7 +84,7 @@
 
 # WSGI_APPLICATION = 'core.wsgi.application'
 
-# # ── Database ──────────────────────────────────────────────────────
+# # ���─ Database ──────────────────────────────────────────────────────
 # DATABASES = {
 #     'default': {
 #         'ENGINE':   'django.db.backends.postgresql',
@@ -239,7 +239,7 @@ SECRET_KEY   = env('SECRET_KEY', 'django-insecure-change-me-in-production-!!!')
 DEBUG        = env('DEBUG', 'True', cast=lambda v: v.lower() in ('true', '1', 'yes'))
 
 ALLOWED_HOSTS = env_list(
-    'ALLOWED_HOSTS', 
+    'ALLOWED_HOSTS',
     'localhost,127.0.0.1,0.0.0.0,lasu-laundry-management-system.vercel.app,lasu-laundry-management-system-b0c4vvuxh.vercel.app,laundry-management-system-project.onrender.com'
 )
 
@@ -351,7 +351,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# ── Email ─────────────────────────────────────��───────────────────
+# ── Email ─────────────────────────────────────────────────────────
 EMAIL_BACKEND       = env('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST          = env('EMAIL_HOST',    'smtp.gmail.com')
 EMAIL_PORT          = env('EMAIL_PORT',    587, cast=int)
@@ -367,7 +367,7 @@ PAYSTACK_BASE_URL   = 'https://api.paystack.co'
 
 # ── Frontend URL (used in email links) ────────────────────────────
 FRONTEND_URL = env(
-    'FRONTEND_URL', 
+    'FRONTEND_URL',
     'http://localhost:3000'
 )
 
@@ -393,7 +393,7 @@ USE_TZ        = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ── Site Info ─────────────────────────────────────────────────────
+# ── Site Info ───���─────────────────────────────────────────────────
 SITE_NAME     = 'LASU Viva Laundromat'
 SITE_ADDRESS  = 'LASU Main Campus, Lagos State University, Lagos, Nigeria'
 SUPPORT_EMAIL = 'muakin12@gmail.com'
