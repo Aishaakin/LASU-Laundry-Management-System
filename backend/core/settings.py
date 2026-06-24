@@ -30,7 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ── Core ──────────────────────────────────────────────────────────
 SECRET_KEY   = env('SECRET_KEY', 'django-insecure-change-me-in-production-!!!')
 DEBUG        = env('DEBUG', 'True', cast=lambda v: v.lower() in ('true', '1', 'yes'))
-ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0')
+ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0', 'lasu-laundry-management-system-fhl1upd1p.vercel.app',
+    'lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app','lasu-laundry-management-system.vercel.app','laundry-management-system-project.onrender.com')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -128,11 +129,13 @@ SIMPLE_JWT = {
 }
 
 # ── CORS ──────────────────────────────────────────────────────────
-CORS_ALLOWED_ORIGINS = env_list('CORS_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000')
+CORS_ALLOWED_ORIGINS = env_list('CORS_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000', 'https://lasu-laundry-management-system-fhl1upd1p.vercel.app',
+    'https://lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app', 'https://laundry-management-system-project.onrender.com', 'https://lasu-laundry-management-system.vercel.app',)
 
 # Also allow all Vercel preview URLs
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.vercel\.app$",
+    r"^https://.*\.onrender\.com$",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -151,7 +154,7 @@ PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', 'pk_test_xxxxxxxxxxxxxxxxxxxxxx
 PAYSTACK_BASE_URL   = 'https://api.paystack.co'
 
 # ── Frontend URL (used in email links) ────────────────────────────
-FRONTEND_URL = env('FRONTEND_URL', 'http://localhost:3000')
+FRONTEND_URL = env('FRONTEND_URL', 'http://localhost:3000', 'https://lasu-laundry-management-system-fhl1upd1p.vercel.app', 'https://lasu-laundry-management-sys-git-786918-aishas-projects-c24a2b15.vercel.app', 'https://lasu-laundry-management-system.vercel.app')
 
 # ── Celery / Redis ────────────────────────────────────────────────
 CELERY_BROKER_URL        = env('REDIS_URL', 'redis://localhost:6379/0')
@@ -192,4 +195,4 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL and dj_database_url:
     DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 
-ALLOWED_HOSTS += ['.railway.app', '.up.railway.app', '.vercel.app']
+ALLOWED_HOSTS += ['.railway.app', '.up.railway.app', '.vercel.app', '.render.com']
