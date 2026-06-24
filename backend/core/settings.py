@@ -33,7 +33,7 @@ DEBUG        = env('DEBUG', 'True', cast=lambda v: v.lower() in ('true', '1', 'y
 
 ALLOWED_HOSTS = env_list(
     'ALLOWED_HOSTS',
-    'localhost,127.0.0.1,0.0.0.0,lasu-laundry-management-system.vercel.app,lasu-laundry-management-system-610eblalb.vercel.app,laundry-management-system-project.onrender.com'
+    'localhost,127.0.0.1,0.0.0.0,lasu-laundry-management-system.vercel.app,laundry-management-system-project.onrender.com'
 )
 
 INSTALLED_APPS = [
