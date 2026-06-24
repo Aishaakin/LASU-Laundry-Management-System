@@ -33,7 +33,7 @@ DEBUG        = env('DEBUG', 'True', cast=lambda v: v.lower() in ('true', '1', 'y
 
 ALLOWED_HOSTS = env_list(
     'ALLOWED_HOSTS',
-    'localhost,127.0.0.1,0.0.0.0,lasu-laundry-management-system.vercel.app,lasu-laundry-management-system-b0c4vvuxh.vercel.app,laundry-management-system-project.onrender.com'
+    'localhost,127.0.0.1,0.0.0.0,lasu-laundry-management-system.vercel.app,lasu-laundry-management-system-610eblalb.vercel.app,laundry-management-system-project.onrender.com'
 )
 
 INSTALLED_APPS = [
@@ -133,8 +133,8 @@ SIMPLE_JWT = {
 
 # ── CORS ──────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
+    'hhttps://lasu-laundry-management-system.vercel.app',
+    'https://laundry-management-system-project.onrender.com',
 ]
 
 # Also allow all Vercel preview URLs (this handles ANY future previews!)
@@ -161,7 +161,7 @@ PAYSTACK_BASE_URL   = 'https://api.paystack.co'
 # ── Frontend URL (used in email links) ────────────────────────────
 FRONTEND_URL = env(
     'FRONTEND_URL',
-    'http://localhost:3000'
+    'https://lasu-laundry-management-system.vercel.app'
 )
 
 # ── Celery / Redis ────────────────────────────────────────────────
