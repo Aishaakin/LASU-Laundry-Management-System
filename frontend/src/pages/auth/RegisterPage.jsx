@@ -20,7 +20,7 @@ export default function RegisterPage() {
       email:            data.email,
       phone_number:     data.phone,
       password:         data.password,
-      password_confirm: data.confirmPassword,
+      confirm_password: data.confirmPassword,
       matric_number:    data.matric_number?.trim() || null,
       department:       data.department?.trim()    || null,
     })
