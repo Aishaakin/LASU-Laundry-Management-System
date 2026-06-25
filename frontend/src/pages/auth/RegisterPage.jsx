@@ -12,26 +12,30 @@ export default function RegisterPage() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm()
 
   const onSubmit = async (data) => {
-    setLoading(true)
-    try {
-      await authRegister({
-        first_name: data.firstName,
-        last_name: data.lastName,
-        email: data.email,
-        phone_number: data.phone,
-        password: data.password,
-        confirm_password: data.confirmPassword,
-      })
-      toast.success('Account created! Welcome to LASU Viva 🎉')
-      navigate('/dashboard')
-    } catch (err) {
-      const errs = err.response?.data
-      const msg = errs?.email?.[0] || errs?.detail || errs?.non_field_errors?.[0] || 'Registration failed. Please try again.'
-      toast.error(msg)
-    } finally {
-      setLoading(false)
-    }
+  setLoading(true)
+  try {
+    await authRegister({
+      first_name:       data.firstName,
+      last_name:        data.lastName,
+      email:            data.email,
+      phone_number:     data.phone,
+      password:         data.password,
+      password_confirm: data.confirmPassword,
+      matric_number:    data.matric_number?.trim() || null,
+      department:       data.department?.trim()    || null,
+    })
+    toast.success('Account created! Welcome to LASU Viva 🎉')
+    navigate('/dashboard')
+  } catch (err) {
+    const errs = err.response?.data
+    if (errs?.email)          toast.error('Email: ' + errs.email[0])
+    else if (errs?.password)  toast.error('Password: ' + errs.password[0])
+    else if (errs?.detail)    toast.error(errs.detail)
+    else                      toast.error('Registration failed. Please try again.')
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <div className="animate-fade-in">
