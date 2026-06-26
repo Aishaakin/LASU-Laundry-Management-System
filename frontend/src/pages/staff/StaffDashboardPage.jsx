@@ -336,7 +336,15 @@ export default function StaffDashboardPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="text-slate-700 font-medium">{b.service_name}</div>
-                        <div className="text-xs text-slate-400">{b.items?.length || 0} items</div>
+                        <div className="text-xs text-slate-400">
+                            {b.items?.length || 0} items
+                            {b.items?.length > 0 && (
+                              <div className="text-xs text-slate-300 mt-0.5">
+                                {b.items.slice(0,2).map(item => item.item_name || item.name).join(', ')}
+                                {b.items.length > 2 && ` +${b.items.length - 2} more`}
+                              </div>
+                            )}
+                          </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="text-slate-700 font-medium">{b.scheduled_date}</div>

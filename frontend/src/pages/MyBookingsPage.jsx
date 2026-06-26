@@ -5,9 +5,23 @@ import { bookingService } from "../services/bookingService";
 import { formatNaira, formatDate, getStatusConfig } from "../utils/helpers";
 import { generateReceiptPDF } from "../utils/helpers";
 import toast from "react-hot-toast";
+import api from '../services/api'
+import { useQueryClient } from '@tanstack/react-query'
 
 function BookingCard({ booking }) {
   const s = getStatusConfig(booking.status);
+  const qc = useQueryClient()
+
+  const handleCancel = async () => {
+  if (!window.confirm('Are you sure you want to cancel this booking?')) return
+  try {
+    await api.patch(`/bookings/${booking.id}/`, { status: 'cancelled' })
+    toast.success('Booking cancelled successfully')
+    qc.invalidateQueries(['my-bookings'])
+  } catch {
+    toast.error('Could not cancel. Please contact support.')
+  }
+}
 
   const handleDownload = async (e) => {
     e.preventDefault();
@@ -64,6 +78,14 @@ function BookingCard({ booking }) {
                 </span>{" "}
                 Receipt
               </button>
+              {booking.status === 'pending' && (
+  <button
+    onClick={handleCancel}
+    className="btn-ghost text-xs py-2 px-3 text-red-500 hover:text-red-700"
+  >
+    <span className="material-symbols-outlined text-sm">cancel</span> Cancel
+  </button>
+)}
               <Link
                 to={`/bookings/${booking.id}`}
                 className="btn-primary text-xs py-2 px-4"
