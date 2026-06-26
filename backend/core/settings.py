@@ -214,3 +214,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_NAME     = 'LASU Viva Laundromat'
 SITE_ADDRESS  = 'LASU Main Campus, Lagos State University, Lagos, Nigeria'
 SUPPORT_EMAIL = env('EMAIL_HOST_USER', 'help@lasuvivalaundromat.com.ng')
+
+# ----- CSRF Trusted Origins (for production) -----
+CSRF_TRUSTED_ORIGINS = [
+    'https://lasu-laundry-management-system.fly.dev',
+    'https://lasu-laundry-management-system.vercel.app',
+    'https://laundry-management-system-project.onrender.com',
+]
