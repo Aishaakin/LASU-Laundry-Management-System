@@ -5,6 +5,7 @@ urlpatterns = [
     path('bookings/',                        views.BookingListView.as_view()),
     path('bookings/create/',                 views.BookingCreateView.as_view()),
     path('bookings/<int:pk>/',               views.BookingDetailView.as_view()),
+    path('bookings/<int:pk>/cancel/',        views.BookingCancelView.as_view()),  
     path('bookings/available-slots/',        views.available_slots),
     path('promos/validate/',                 views.validate_promo),
     # Admin

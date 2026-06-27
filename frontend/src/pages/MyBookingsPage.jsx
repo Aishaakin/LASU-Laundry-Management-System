@@ -1,27 +1,27 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { bookingService } from "../services/bookingService";
 import { formatNaira, formatDate, getStatusConfig } from "../utils/helpers";
 import { generateReceiptPDF } from "../utils/helpers";
 import toast from "react-hot-toast";
-import api from '../services/api'
-import { useQueryClient } from '@tanstack/react-query'
+import api from '../services/api';
 
 function BookingCard({ booking }) {
-  const s = getStatusConfig(booking.status);
-  const qc = useQueryClient()
+  const s  = getStatusConfig(booking.status);
+  const qc = useQueryClient();
 
   const handleCancel = async () => {
-  if (!window.confirm('Are you sure you want to cancel this booking?')) return
-  try {
-    await api.patch(`/bookings/${booking.id}/`, { status: 'cancelled' })
-    toast.success('Booking cancelled successfully')
-    qc.invalidateQueries(['my-bookings'])
-  } catch {
-    toast.error('Could not cancel. Please contact support.')
-  }
-}
+    if (!window.confirm('Are you sure you want to cancel this booking?')) return;
+    try {
+      await api.post(`/bookings/${booking.id}/cancel/`);  // POST to /cancel/
+      toast.success('Booking cancelled successfully');
+      qc.invalidateQueries(['my-bookings']);
+    } catch (err) {
+      const msg = err.response?.data?.error || 'Could not cancel. Please contact support.';
+      toast.error(msg);
+    }
+  };
 
   const handleDownload = async (e) => {
     e.preventDefault();
@@ -46,9 +46,7 @@ function BookingCard({ booking }) {
               <h3 className="text-lg font-bold text-slate-900 font-display">
                 Order #{booking.order_number}
               </h3>
-              <p className="text-sm text-slate-500 mt-0.5">
-                {booking.service_name}
-              </p>
+              <p className="text-sm text-slate-500 mt-0.5">{booking.service_name}</p>
             </div>
             <div className="text-right">
               <div className="text-xl font-bold text-primary-600 font-display">
@@ -59,37 +57,29 @@ function BookingCard({ booking }) {
               </div>
             </div>
           </div>
+
           <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
             <div className="flex items-center gap-2 text-sm text-slate-500">
-              <span className="material-symbols-outlined text-base">
-                schedule
-              </span>
-              <span>
-                Drop-off: {booking.scheduled_date} at {booking.scheduled_time}
-              </span>
+              <span className="material-symbols-outlined text-base">schedule</span>
+              <span>Drop-off: {booking.scheduled_date} at {booking.scheduled_time}</span>
             </div>
+
             <div className="flex gap-2">
-              <button
-                onClick={handleDownload}
-                className="btn-ghost text-xs py-2 px-3"
-              >
-                <span className="material-symbols-outlined text-sm">
-                  receipt_long
-                </span>{" "}
-                Receipt
+              <button onClick={handleDownload} className="btn-ghost text-xs py-2 px-3">
+                <span className="material-symbols-outlined text-sm">receipt_long</span> Receipt
               </button>
+
+              {/* Cancel only shows for pending bookings */}
               {booking.status === 'pending' && (
-  <button
-    onClick={handleCancel}
-    className="btn-ghost text-xs py-2 px-3 text-red-500 hover:text-red-700"
-  >
-    <span className="material-symbols-outlined text-sm">cancel</span> Cancel
-  </button>
-)}
-              <Link
-                to={`/bookings/${booking.id}`}
-                className="btn-primary text-xs py-2 px-4"
-              >
+                <button
+                  onClick={handleCancel}
+                  className="btn-ghost text-xs py-2 px-3 text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400"
+                >
+                  <span className="material-symbols-outlined text-sm">cancel</span> Cancel
+                </button>
+              )}
+
+              <Link to={`/bookings/${booking.id}`} className="btn-primary text-xs py-2 px-4">
                 View Details
               </Link>
             </div>
@@ -105,41 +95,34 @@ export default function MyBookingsPage() {
 
   const { data: allBookings = [], isLoading } = useQuery({
     queryKey: ["my-bookings"],
-    queryFn: () => bookingService.getMyBookings(),
+    queryFn:  () => bookingService.getMyBookings(),
   });
 
   const bookings = Array.isArray(allBookings) ? allBookings : [];
-  const current = bookings.filter((b) =>
-    ["pending", "confirmed", "received", "processing", "ready"].includes(
-      b.status,
-    ),
+  const current  = bookings.filter(b =>
+    ["pending", "confirmed", "received", "processing", "ready"].includes(b.status)
   );
-  const past = bookings.filter((b) =>
-    ["completed", "cancelled"].includes(b.status),
+  const past     = bookings.filter(b =>
+    ["completed", "cancelled"].includes(b.status)
   );
   const displayed = tab === "current" ? current : past;
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 font-display">
-          My Bookings
-        </h1>
-        <p className="text-slate-500 mt-1">
-          Track and manage your LASU Viva laundry orders.
-        </p>
+        <h1 className="text-3xl font-bold text-slate-900 font-display">My Bookings</h1>
+        <p className="text-slate-500 mt-1">Track and manage your LASU Viva laundry orders.</p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-slate-200">
-        {[
-          ["current", "Current Orders"],
-          ["past", "Past Orders"],
-        ].map(([k, label]) => (
+        {[["current", "Current Orders"], ["past", "Past Orders"]].map(([k, label]) => (
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-colors ${tab === k ? "text-primary-600 border-primary-600" : "text-slate-500 border-transparent hover:text-slate-800"}`}
+            className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-colors ${
+              tab === k ? "text-primary-600 border-primary-600" : "text-slate-500 border-transparent hover:text-slate-800"
+            }`}
           >
             {label}
             {k === "current" && current.length > 0 && (
@@ -153,9 +136,7 @@ export default function MyBookingsPage() {
 
       {isLoading ? (
         <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="card h-32 animate-pulse bg-slate-100" />
-          ))}
+          {[1, 2, 3].map(i => <div key={i} className="card h-32 animate-pulse bg-slate-100" />)}
         </div>
       ) : displayed.length === 0 ? (
         <div className="card p-16 text-center">
@@ -164,21 +145,13 @@ export default function MyBookingsPage() {
             No {tab === "current" ? "active" : "past"} bookings
           </h3>
           <p className="text-slate-500 mb-6">
-            {tab === "current"
-              ? "You don't have any active orders."
-              : "Your completed orders will appear here."}
+            {tab === "current" ? "You don't have any active orders." : "Your completed orders will appear here."}
           </p>
-          {tab === "current" && (
-            <Link to="/services" className="btn-primary">
-              Book a Service
-            </Link>
-          )}
+          {tab === "current" && <Link to="/services" className="btn-primary">Book a Service</Link>}
         </div>
       ) : (
         <div className="space-y-4">
-          {displayed.map((b) => (
-            <BookingCard key={b.id} booking={b} />
-          ))}
+          {displayed.map(b => <BookingCard key={b.id} booking={b} />)}
         </div>
       )}
     </div>
