@@ -1,13 +1,8 @@
 // PaymentPage.jsx
-import { useState } from 'react'
-import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
-import { useAuth } from '../context/AuthContext'
-import { paymentService } from '../services/paymentService'
-import { formatNaira } from '../utils/helpers'
-import { usePaystackPayment } from 'react-paystack'
-import toast from 'react-hot-toast'
-import api from '../services/api'
+const safeNum = (val, fallback = 0) => {
+  const n = Number(val)
+  return Number.isFinite(n) ? n : fallback
+}
 
 export default function PaymentPage() {
   const { bookingId } = useParams()
@@ -22,10 +17,17 @@ export default function PaymentPage() {
   const [applyingPromo, setApplyingPromo] = useState(false)
   const [discount,      setDiscount]      = useState(0)
 
-  const total      = Number(booking?.total_amount || 0)
-  const subtotal   = Number(booking?.subtotal     || 0)
-  const serviceFee = Number(booking?.service_fee  || 200)
-  const finalTotal = Math.max(0, total - discount)
+  // ── Derive safe numeric values from booking, computing total ourselves
+  //    instead of trusting a possibly-missing total_amount field.
+  const itemsTotal = safeNum(booking?.items?.reduce(
+    (sum, i) => sum + safeNum(i.line_total ?? (safeNum(i.unit_price) * safeNum(i.quantity))),
+    0
+  ))
+  const serviceFee = safeNum(booking?.service_fee, 200)
+  const subtotal   = safeNum(booking?.subtotal, itemsTotal + serviceFee)
+  // Prefer backend total_amount, but fall back to our own computed total if missing/NaN
+  const total      = safeNum(booking?.total_amount, subtotal)
+  const finalTotal = Math.max(0, total - safeNum(discount))
 
   // ── Paystack config ───────────────────────────────────────────
   const paystackConfig = {
@@ -83,13 +85,15 @@ export default function PaymentPage() {
       const res  = await api.post('/promos/validate/', { code: promoCode.trim().toUpperCase() })
       const data = res.data
 
-      // Calculate discount locally from what backend returns
+      // Calculate discount locally from what backend returns — guard against NaN
       let calc = 0
+      const discountValue = safeNum(data.discount_value)
       if (data.discount_type === 'percentage') {
-        calc = Math.round((total * Number(data.discount_value)) / 100)
+        calc = Math.round((total * discountValue) / 100)
       } else {
-        calc = Math.min(Number(data.discount_value), total)
+        calc = Math.min(discountValue, total)
       }
+      calc = safeNum(calc)
 
       setDiscount(calc)
       setPromoResult({
@@ -276,7 +280,7 @@ export default function PaymentPage() {
             <div className="space-y-2.5 text-sm">
               <div className="flex justify-between">
                 <span className="text-slate-500">Items Total</span>
-                <span className="font-semibold">{formatNaira(subtotal - serviceFee)}</span>
+                <span className="font-semibold">{formatNaira(itemsTotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Service Fee</span>
