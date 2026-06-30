@@ -18,14 +18,26 @@ class RegisterSerializer(serializers.ModelSerializer):
             'password', 'confirm_password',
         ]
 
+    def validate_email(self, value):
+        value = value.strip().lower()
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError('An account with this email already exists.')
+        return value
+
+    def validate_matric_number(self, value):
+        # Allow blank/empty — only check uniqueness if a value was actually provided
+        if value and value.strip():
+            value = value.strip()
+            if User.objects.filter(matric_number__iexact=value).exists():
+                raise serializers.ValidationError('This matric number is already registered.')
+            return value
+        return None
+
     def validate(self, data):
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError({'confirm_password': 'Passwords do not match.'})
 
-        # Clean optional student fields
-        matric = data.get('matric_number', '')
-        data['matric_number'] = matric.strip() if matric else None
-
+        # Clean optional department field (matric_number already cleaned by validate_matric_number)
         dept = data.get('department', '')
         data['department'] = dept.strip() if dept else None
 
