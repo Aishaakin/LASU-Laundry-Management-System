@@ -1,5 +1,4 @@
 //BookingPage.jsx
-
 import { useState, useMemo } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
@@ -14,6 +13,12 @@ const CLOTHING_ITEMS = {
   Dresses:   [{ id: 8, name: 'Dress', price: 700, icon: '👗' }, { id: 9, name: 'Gown', price: 900, icon: '👗' }],
   Outerwear: [{ id: 10, name: 'Jacket', price: 800, icon: '🧥' }, { id: 11, name: 'Coat', price: 1200, icon: '🥼' }],
   Others:    [{ id: 12, name: 'Bed Sheet', price: 600, icon: '🛏️' }, { id: 13, name: 'Towel', price: 300, icon: '⬜' }],
+  Soap:      [
+    { id: 14, name: 'Viva Detergent (Big)',   price: 3500, icon: '🧴' },
+    { id: 15, name: 'Viva Detergent (Small)', price: 1500, icon: '🧴' },
+    { id: 16, name: 'Bar Soap',               price: 800,  icon: '🧼' },
+    { id: 17, name: 'Liquid Soap',            price: 600,  icon: '🧴' },
+  ],
 }
 
 const TIME_SLOTS = ['08:00', '09:00', '11:00', '12:30', '14:00', '15:30', '17:00']
@@ -32,7 +37,6 @@ export default function BookingPage() {
   const [basket, setBasket] = useState({})
   const [activeCategory, setActiveCategory] = useState('Tops')
 
-  // Calendar grid
   const calDays = useMemo(() => {
     const start = startOfMonth(currentMonth)
     const end = endOfMonth(currentMonth)
@@ -61,17 +65,17 @@ export default function BookingPage() {
       navigate(`/payment/${data.id}`, { state: { booking: data } })
     },
     onError: (err) => {
-    console.log('FULL ERROR:', err.response?.data)
-    const msg = JSON.stringify(err.response?.data)
-    toast.error(msg || 'Could not create booking. Try again.')
-},
+      console.log('FULL ERROR:', err.response?.data)
+      const msg = JSON.stringify(err.response?.data)
+      toast.error(msg || 'Could not create booking. Try again.')
+    },
   })
 
   const handleConfirm = () => {
     if (!selectedDay) return toast.error('Please select a drop-off date.')
     if (!selectedTime) return toast.error('Please select a time slot.')
     if (basketItems.length === 0) return toast.error('Please add at least one item.')
-    
+
     const bookingData = {
       service_id: Number(service.id),
       scheduled_date: format(selectedDay, 'yyyy-MM-dd'),
@@ -79,7 +83,7 @@ export default function BookingPage() {
       payment_method: 'at_service',
       items: basketItems.map(i => ({ clothing_item_id: Number(i.id), quantity: i.qty })),
     }
-    
+
     console.log('Sending booking data:', JSON.stringify(bookingData, null, 2))
     createBooking(bookingData)
   }

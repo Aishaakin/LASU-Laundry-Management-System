@@ -44,6 +44,11 @@ class Command(BaseCommand):
             (11, 'Coat',       'outerwear', 1200, '🥼'),
             (12, 'Bed Sheet',  'others',    600,  '🛏️'),
             (13, 'Towel',      'others',    300,  '🪥'),
+            # ── New Soap category ──────────────────────────────────
+            (14, 'Viva Detergent (Big)',   'soap', 3500, '🧴'),
+            (15, 'Viva Detergent (Small)', 'soap', 1500, '🧴'),
+            (16, 'Bar Soap',               'soap', 800,  '🧼'),
+            (17, 'Liquid Soap',            'soap', 600,  '🧴'),
         ]
 
         for id, name, cat, price, icon in items:
@@ -70,7 +75,6 @@ class Command(BaseCommand):
                 'is_active':  True,
             }
         )
-        # Always set password whether the account was just created or already existed
         staff.set_password('LasuViva2026')
         staff.username  = 'staff@lasuviva.com'
         staff.is_staff  = True
@@ -90,7 +94,6 @@ class Command(BaseCommand):
                 'is_active':     True,
             }
         )
-        # Always update password whether the account was just created or already existed
         admin.set_password('LasuAdmin2026!')
         admin.is_staff     = True
         admin.is_superuser = True
