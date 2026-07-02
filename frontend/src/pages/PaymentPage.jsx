@@ -1,20 +1,47 @@
 // PaymentPage.jsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../context/AuthContext'
 import { paymentService } from '../services/paymentService'
+import { bookingService } from '../services/bookingService'
 import { formatNaira } from '../utils/helpers'
 import { usePaystackPayment } from 'react-paystack'
 import toast from 'react-hot-toast'
 import api from '../services/api'
+
+const safeNum = (val, fallback = 0) => {
+  const n = Number(val)
+  return Number.isFinite(n) ? n : fallback
+}
 
 export default function PaymentPage() {
   const { bookingId } = useParams()
   const { state }     = useLocation()
   const navigate      = useNavigate()
   const { user }      = useAuth()
-  const booking       = state?.booking
+
+  // ── Fallback: if location.state is missing (e.g. page refresh),
+  //    fetch the booking directly from the API instead of showing NaN.
+  const [booking, setBooking] = useState(state?.booking || null)
+  const [loadingBooking, setLoadingBooking] = useState(!state?.booking)
+
+  useEffect(() => {
+    if (!state?.booking && bookingId) {
+      bookingService.getBookingDetail(bookingId)
+        .then(data => {
+          console.log('Fetched booking fresh from API:', data)
+          setBooking(data)
+        })
+        .catch(err => {
+          console.error('Could not fetch booking:', err)
+          toast.error('Could not load booking details.')
+        })
+        .finally(() => setLoadingBooking(false))
+    } else {
+      console.log('Using booking from navigation state:', state?.booking)
+    }
+  }, [bookingId])
 
   const [method,        setMethod]        = useState('card')
   const [promoCode,     setPromoCode]     = useState('')
@@ -22,16 +49,38 @@ export default function PaymentPage() {
   const [applyingPromo, setApplyingPromo] = useState(false)
   const [discount,      setDiscount]      = useState(0)
 
-  const total      = Number(booking?.total_amount || 0)
-  const subtotal   = Number(booking?.subtotal     || 0)
-  const serviceFee = Number(booking?.service_fee  || 200)
-  const finalTotal = Math.max(0, total - discount)
+  // ── Diagnostic logging — remove after confirming the fix ───────
+  useEffect(() => {
+    if (booking) {
+      console.log('🔍 booking object:', booking)
+      console.log('🔍 typeof total_amount:', typeof booking.total_amount, '| value:', booking.total_amount)
+      console.log('🔍 typeof subtotal:', typeof booking.subtotal, '| value:', booking.subtotal)
+      console.log('🔍 typeof service_fee:', typeof booking.service_fee, '| value:', booking.service_fee)
+      console.log('🔍 items:', booking.items)
+    }
+  }, [booking])
+
+  // ── Compute every value independently and safely ───────────────
+  const itemsTotal = (() => {
+    if (!booking?.items || !Array.isArray(booking.items)) return 0
+    return booking.items.reduce((sum, i) => {
+      const lineTotal = safeNum(i.line_total, safeNum(i.unit_price) * safeNum(i.quantity))
+      return sum + lineTotal
+    }, 0)
+  })()
+
+  const serviceFee = safeNum(booking?.service_fee, 200)
+  const computedSubtotal = itemsTotal + serviceFee
+  const subtotal = safeNum(booking?.subtotal, computedSubtotal)
+  const backendTotal = safeNum(booking?.total_amount, NaN)
+  const total = Number.isFinite(backendTotal) ? backendTotal : subtotal
+  const finalTotal = Math.max(0, safeNum(total, 0) - safeNum(discount, 0))
 
   // ── Paystack config ───────────────────────────────────────────
   const paystackConfig = {
     reference: `LAU-${bookingId}-${Date.now()}`,
     email:     user?.email || '',
-    amount:    Math.round(finalTotal * 100),   // kobo
+    amount:    Math.round(safeNum(finalTotal, 0) * 100),
     publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_274e6ff9df706b42664328af4c5fbfc8b42e583a',
     currency:  'NGN',
     channels:  ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
@@ -46,7 +95,6 @@ export default function PaymentPage() {
     },
   }
 
-  // ── Paystack verify ───────────────────────────────────────────
   const { mutate: verifyPayment, isPending: verifying } = useMutation({
     mutationFn: (reference) => paymentService.verifyPayment(reference),
     onSuccess: (data) => {
@@ -58,9 +106,7 @@ export default function PaymentPage() {
 
   const onPaystackSuccess = (response) => {
     const toastId = toast.loading('Verifying payment...')
-    verifyPayment(response.reference, {
-      onSettled: () => toast.dismiss(toastId),
-    })
+    verifyPayment(response.reference, { onSettled: () => toast.dismiss(toastId) })
   }
 
   const onPaystackClose = () =>
@@ -68,28 +114,28 @@ export default function PaymentPage() {
 
   const initializePayment = usePaystackPayment(paystackConfig)
 
-  // ── Pay at service ────────────────────────────────────────────
   const { mutate: confirmAtService, isPending: confirming } = useMutation({
     mutationFn: () => paymentService.initiatePayment(bookingId, user.email, 0),
     onSuccess:  () => navigate(`/payment/pay-at-service/${bookingId}`, { state: { booking } }),
     onError:    () => toast.error('Could not confirm booking. Please try again.'),
   })
 
-  // ── Promo code ────────────────────────────────────────────────
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) return
     setApplyingPromo(true)
     try {
       const res  = await api.post('/promos/validate/', { code: promoCode.trim().toUpperCase() })
       const data = res.data
+      console.log('🔍 promo response:', data)
 
-      // Calculate discount locally from what backend returns
       let calc = 0
+      const discountValue = safeNum(data.discount_value, 0)
       if (data.discount_type === 'percentage') {
-        calc = Math.round((total * Number(data.discount_value)) / 100)
+        calc = Math.round((safeNum(total, 0) * discountValue) / 100)
       } else {
-        calc = Math.min(Number(data.discount_value), total)
+        calc = Math.min(discountValue, safeNum(total, 0))
       }
+      calc = safeNum(calc, 0)
 
       setDiscount(calc)
       setPromoResult({
@@ -106,13 +152,33 @@ export default function PaymentPage() {
     }
   }
 
-  // ── Submit ────────────────────────────────────────────────────
   const handleSubmitPayment = () => {
+    if (!Number.isFinite(finalTotal) || finalTotal <= 0) {
+      toast.error('Could not determine order total. Please go back and try again.')
+      return
+    }
     if (method === 'card') {
       initializePayment({ onSuccess: onPaystackSuccess, onClose: onPaystackClose })
     } else {
       confirmAtService()
     }
+  }
+
+  if (loadingBooking) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <span className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!booking) {
+    return (
+      <div className="text-center py-24">
+        <p className="text-slate-500 mb-4">Booking not found.</p>
+        <Link to="/bookings" className="btn-primary">Back to My Bookings</Link>
+      </div>
+    )
   }
 
   return (
@@ -161,7 +227,6 @@ export default function PaymentPage() {
 
             {method === 'card' ? (
               <div className="space-y-4">
-                {/* Accepted cards */}
                 <div className="space-y-2">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                     Accepted Payment Methods:
@@ -276,7 +341,7 @@ export default function PaymentPage() {
             <div className="space-y-2.5 text-sm">
               <div className="flex justify-between">
                 <span className="text-slate-500">Items Total</span>
-                <span className="font-semibold">{formatNaira(subtotal - serviceFee)}</span>
+                <span className="font-semibold">{formatNaira(itemsTotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Service Fee</span>
