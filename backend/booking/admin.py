@@ -5,20 +5,31 @@ from .models import Booking, BookingItem, PromoCode
 class BookingItemInline(admin.TabularInline):
     model           = BookingItem
     extra           = 0
-    readonly_fields = ['clothing_item_name', 'line_total']
+    readonly_fields = ['get_item_name', 'get_line_total']
+
+    def get_item_name(self, obj):
+        return obj.clothing_item.name if obj.clothing_item else '-'
+    get_item_name.short_description = 'Item'
+
+    def get_line_total(self, obj):
+        return f'₦{obj.unit_price * obj.quantity:,.2f}'
+    get_line_total.short_description = 'Line Total'
 
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display    = ['order_number', 'user', 'service', 'scheduled_date',
-                       'scheduled_time', 'status', 'payment_method',
-                       'payment_status', 'total_amount', 'created_at']
+    list_display    = ['order_number', 'get_user_email', 'service',
+                       'scheduled_date', 'scheduled_time', 'status',
+                       'payment_method', 'payment_status', 'total_amount', 'created_at']
     list_filter     = ['status', 'payment_method', 'payment_status', 'scheduled_date']
     search_fields   = ['order_number', 'user__email', 'user__first_name', 'user__last_name']
     readonly_fields = ['order_number', 'created_at', 'updated_at']
     inlines         = [BookingItemInline]
-    # Removed list_editable — conflicts with actions and causes 500
     actions         = ['mark_confirmed', 'mark_received', 'mark_ready', 'mark_completed']
+
+    def get_user_email(self, obj):
+        return obj.user.email if obj.user else '-'
+    get_user_email.short_description = 'User'
 
     def mark_confirmed(self, request, queryset):
         import threading
