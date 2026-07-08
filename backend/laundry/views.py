@@ -72,37 +72,49 @@ class PasswordResetRequestView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = request.data.get('email', '').lower()
+        email = request.data.get('email', '').strip().lower()
+        if not email:
+            return Response({'error': 'Email is required.'}, status=400)
         try:
-            user  = User.objects.get(email=email)
+            user  = User.objects.get(email__iexact=email)
             uid   = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
             reset_url = f"{settings.FRONTEND_URL}/auth/reset-password/{uid}/{token}"
             from notifications.emails import send_password_reset_email
-            send_email_async(send_password_reset_email, user, reset_url)   # ← non-blocking now
+            send_email_async(send_password_reset_email, user, reset_url)
         except User.DoesNotExist:
             pass
-        return Response({'message': 'Reset link sent if email exists.'})
+        return Response({'message': 'If that email is registered, a reset link has been sent.'})
 
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        uid, token   = request.data.get('uid'), request.data.get('token')
-        new_pwd, confirm = request.data.get('new_password'), request.data.get('confirm_password')
-        if new_pwd != confirm:
+        uid         = request.data.get('uid', '').strip()
+        token       = request.data.get('token', '').strip()
+        new_pwd     = request.data.get('new_password', '').strip()
+        confirm_pwd = request.data.get('confirm_password', '').strip()
+
+        if not uid or not token or not new_pwd:
+            return Response({'error': 'uid, token and new_password are required.'}, status=400)
+        if new_pwd != confirm_pwd:
             return Response({'error': 'Passwords do not match.'}, status=400)
+        if len(new_pwd) < 8:
+            return Response({'error': 'Password must be at least 8 characters.'}, status=400)
+
         try:
             pk   = force_str(urlsafe_base64_decode(uid))
             user = User.objects.get(pk=pk)
-        except Exception:
-            return Response({'error': 'Invalid link.'}, status=400)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response({'error': 'Invalid reset link.'}, status=400)
+
         if not default_token_generator.check_token(user, token):
-            return Response({'error': 'Link expired.'}, status=400)
+            return Response({'error': 'This reset link has expired. Please request a new one.'}, status=400)
+
         user.set_password(new_pwd)
         user.save()
-        return Response({'message': 'Password reset successfully.'})
+        return Response({'message': 'Password reset successfully. You can now log in.'})
 
 
 class ChangePasswordView(APIView):

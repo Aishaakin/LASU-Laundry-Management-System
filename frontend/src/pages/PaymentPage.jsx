@@ -121,36 +121,46 @@ export default function PaymentPage() {
   })
 
   const handleApplyPromo = async () => {
-    if (!promoCode.trim()) return
-    setApplyingPromo(true)
-    try {
-      const res  = await api.post('/promos/validate/', { code: promoCode.trim().toUpperCase() })
-      const data = res.data
-      console.log('🔍 promo response:', data)
+  if (!promoCode.trim()) return
+  setApplyingPromo(true)
+  try {
+    const res  = await api.post('/promos/validate/', { code: promoCode.trim().toUpperCase() })
+    const data = res.data
+    console.log('🔍 promo response:', data)
+    console.log('🔍 total at time of promo:', total, 'finalTotal:', finalTotal)
 
-      let calc = 0
-      const discountValue = safeNum(data.discount_value, 0)
-      if (data.discount_type === 'percentage') {
-        calc = Math.round((safeNum(total, 0) * discountValue) / 100)
-      } else {
-        calc = Math.min(discountValue, safeNum(total, 0))
-      }
-      calc = safeNum(calc, 0)
-
-      setDiscount(calc)
-      setPromoResult({
-        valid:   true,
-        message: `You save ₦${calc.toLocaleString()} on this order!`,
-      })
-      toast.success('Promo code applied! 🎉')
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Invalid or expired promo code.'
-      setPromoResult({ valid: false, error: msg })
+    if (!data.valid) {
+      setPromoResult({ valid: false, error: data.message || 'Invalid or expired promo code.' })
       setDiscount(0)
-    } finally {
-      setApplyingPromo(false)
+      return
     }
+
+    // Use finalTotal which is already computed safely
+    const baseAmount = safeNum(finalTotal, 0) || safeNum(total, 0) || safeNum(booking?.total_amount, 0)
+    let calc = 0
+    const discountValue = safeNum(data.discount_value, 0)
+
+    if (data.discount_type === 'percentage') {
+      calc = Math.round((baseAmount * discountValue) / 100)
+    } else {
+      calc = Math.min(discountValue, baseAmount)
+    }
+    calc = safeNum(calc, 0)
+
+    setDiscount(calc)
+    setPromoResult({
+      valid:   true,
+      message: `You save ₦${calc.toLocaleString()} on this order!`,
+    })
+    toast.success('Promo code applied! 🎉')
+  } catch (err) {
+    const msg = err.response?.data?.message || 'Invalid or expired promo code.'
+    setPromoResult({ valid: false, error: msg })
+    setDiscount(0)
+  } finally {
+    setApplyingPromo(false)
   }
+}
 
   const handleSubmitPayment = () => {
     if (!Number.isFinite(finalTotal) || finalTotal <= 0) {
