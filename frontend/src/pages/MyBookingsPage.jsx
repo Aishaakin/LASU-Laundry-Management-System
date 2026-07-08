@@ -1,3 +1,4 @@
+//mybookingPage.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,7 +15,7 @@ function BookingCard({ booking }) {
   const handleCancel = async () => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
     try {
-      await api.post(`/bookings/${booking.id}/cancel/`);  // POST to /cancel/
+      await api.post(`/bookings/${booking.id}/cancel/`);
       toast.success('Booking cancelled successfully');
       qc.invalidateQueries(['my-bookings']);
     } catch (err) {
@@ -32,6 +33,9 @@ function BookingCard({ booking }) {
       toast.error("Could not generate PDF.");
     }
   };
+
+  // Allow cancel for pending or confirmed bookings (case-insensitive)
+  const canCancel = ['pending', 'confirmed'].includes(booking.status?.toLowerCase());
 
   return (
     <div className="card overflow-hidden hover:shadow-card-lg transition-all">
@@ -64,13 +68,12 @@ function BookingCard({ booking }) {
               <span>Drop-off: {booking.scheduled_date} at {booking.scheduled_time}</span>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button onClick={handleDownload} className="btn-ghost text-xs py-2 px-3">
                 <span className="material-symbols-outlined text-sm">receipt_long</span> Receipt
               </button>
 
-              {/* Cancel only shows for pending bookings */}
-              {booking.status === 'pending' && (
+              {canCancel && (
                 <button
                   onClick={handleCancel}
                   className="btn-ghost text-xs py-2 px-3 text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400"
@@ -98,12 +101,12 @@ export default function MyBookingsPage() {
     queryFn:  () => bookingService.getMyBookings(),
   });
 
-  const bookings = Array.isArray(allBookings) ? allBookings : [];
-  const current  = bookings.filter(b =>
-    ["pending", "confirmed", "received", "processing", "ready"].includes(b.status)
+  const bookings  = Array.isArray(allBookings) ? allBookings : [];
+  const current   = bookings.filter(b =>
+    ["pending", "confirmed", "received", "processing", "ready"].includes(b.status?.toLowerCase())
   );
-  const past     = bookings.filter(b =>
-    ["completed", "cancelled"].includes(b.status)
+  const past      = bookings.filter(b =>
+    ["completed", "cancelled"].includes(b.status?.toLowerCase())
   );
   const displayed = tab === "current" ? current : past;
 
@@ -121,7 +124,9 @@ export default function MyBookingsPage() {
             key={k}
             onClick={() => setTab(k)}
             className={`pb-3 px-4 text-sm font-semibold border-b-2 transition-colors ${
-              tab === k ? "text-primary-600 border-primary-600" : "text-slate-500 border-transparent hover:text-slate-800"
+              tab === k
+                ? "text-primary-600 border-primary-600"
+                : "text-slate-500 border-transparent hover:text-slate-800"
             }`}
           >
             {label}
@@ -136,7 +141,9 @@ export default function MyBookingsPage() {
 
       {isLoading ? (
         <div className="space-y-4">
-          {[1, 2, 3].map(i => <div key={i} className="card h-32 animate-pulse bg-slate-100" />)}
+          {[1, 2, 3].map(i => (
+            <div key={i} className="card h-32 animate-pulse bg-slate-100" />
+          ))}
         </div>
       ) : displayed.length === 0 ? (
         <div className="card p-16 text-center">
@@ -145,9 +152,13 @@ export default function MyBookingsPage() {
             No {tab === "current" ? "active" : "past"} bookings
           </h3>
           <p className="text-slate-500 mb-6">
-            {tab === "current" ? "You don't have any active orders." : "Your completed orders will appear here."}
+            {tab === "current"
+              ? "You don't have any active orders."
+              : "Your completed orders will appear here."}
           </p>
-          {tab === "current" && <Link to="/services" className="btn-primary">Book a Service</Link>}
+          {tab === "current" && (
+            <Link to="/services" className="btn-primary">Book a Service</Link>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
