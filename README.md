@@ -56,14 +56,6 @@ pip install -r requirements.txt
 python manage.py makemigrations laundry booking payment
 python manage.py migrate
 
-<<<<<<< HEAD
-# Create superuser (admin)
-python manage.py createsuperuser
-
-# Load sample data (optional)
-python manage.py shell
-```
-
 In the Django shell, add sample services:
 ```python
 from laundry.models import Service, ClothingItem
@@ -80,14 +72,13 @@ ClothingItem.objects.create(name='Dress', category='dresses', price=700, icon='ð
 
 ```bash
 # Start the backend server
-=======
-Start the backend server
->>>>>>> 4b124dceb079bf37fa73651f027491ee1b7f6cc7
 python manage.py runserver
 ```
 
 Backend API available at: `http://localhost:8000/api/v1/`
 Admin dashboard: `http://localhost:8000/admin/`
+
+
 
 ---
 
